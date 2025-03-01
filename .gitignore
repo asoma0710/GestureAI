@@ -1,0 +1,14 @@
+# Node Modules
+node_modules/
+dist/
+# Python Bytecode
+__pycache__/
+*.pyc
+# Virtual Environment
+venv/
+.env
+# Logs
+logs/
+*.log
+# Database
+database/*.db
