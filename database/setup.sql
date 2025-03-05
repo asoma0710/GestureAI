@@ -18,6 +18,7 @@ CREATE TABLE videos (
     id INT NOT NULL AUTO_INCREMENT,
     video_id VARCHAR(255) NOT NULL,
     video_name VARCHAR(255) NOT NULL,
+    video_path VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
 );
 
@@ -31,4 +32,5 @@ CREATE TABLE users (
     PRIMARY KEY (id)
 );
 
-LOAD DATA INFILE 'C:\Users\taris\Downloads\how2sign_train.csv' INTO TABLE subtitles FIELDS TERMINATED BY '    ' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+--We need to load the data into the database
+--LOAD DATA INFILE 'C:\Users\taris\Downloads\how2sign_train.csv' INTO TABLE subtitles FIELDS TERMINATED BY '    ' LINES TERMINATED BY '\n' IGNORE 1 LINES;
