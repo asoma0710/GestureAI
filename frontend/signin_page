@@ -1,0 +1,143 @@
+import React, {useState} from "react";
+import { SafeAreaView, View, ScrollView, Text, TextInput, } from "react-native";
+export default (props) => {
+	const [textInput1, onChangeTextInput1] = useState('');
+	const [textInput2, onChangeTextInput2] = useState('');
+	const [textInput3, onChangeTextInput3] = useState('');
+	return (
+		<SafeAreaView 
+			style={{
+				flex: 1,
+				backgroundColor: "#FFFFFF",
+			}}>
+			<ScrollView  
+				style={{
+					flex: 1,
+					backgroundColor: "#FFFFFF",
+				}}>
+				<Text 
+					style={{
+						color: "#39282F",
+						fontSize: 28,
+						fontWeight: "bold",
+						marginTop: 55,
+						marginBottom: 53,
+						marginLeft: 17,
+					}}>
+					{"SIGN IN INFORMATION"}
+				</Text>
+				<View 
+					style={{
+						backgroundColor: "#E5F5ED",
+						borderRadius: 5,
+						paddingTop: 23,
+						paddingBottom: 12,
+						marginBottom: 22,
+						marginHorizontal: 27,
+					}}>
+					<Text 
+						style={{
+							color: "#885C5C",
+							fontSize: 22,
+							marginLeft: 39,
+						}}>
+						{"Name"}
+					</Text>
+				</View>
+				<TextInput
+					placeholder={"email id"}
+					value={textInput1}
+					onChangeText={onChangeTextInput1}
+					style={{
+						color: "#6F5151",
+						fontSize: 22,
+						marginBottom: 31,
+						marginHorizontal: 27,
+						backgroundColor: "#E5F5EE",
+						borderRadius: 5,
+						paddingVertical: 22,
+						paddingHorizontal: 38,
+					}}
+				/>
+				<TextInput
+					placeholder={"Create Password"}
+					value={textInput2}
+					onChangeText={onChangeTextInput2}
+					style={{
+						color: "#6F5151",
+						fontSize: 22,
+						marginBottom: 20,
+						marginHorizontal: 27,
+						backgroundColor: "#E5F5EE",
+						borderRadius: 5,
+						paddingVertical: 22,
+						paddingHorizontal: 39,
+					}}
+				/>
+				<Text 
+					style={{
+						color: "#000000",
+						fontSize: 14,
+						marginBottom: 36,
+						marginLeft: 41,
+					}}>
+					{"Password must be atleast 8 characters"}
+				</Text>
+				<TextInput
+					placeholder={"re-enter Password"}
+					value={textInput3}
+					onChangeText={onChangeTextInput3}
+					style={{
+						color: "#6F5151",
+						fontSize: 22,
+						marginBottom: 234,
+						marginHorizontal: 27,
+						backgroundColor: "#E5F5EE",
+						borderRadius: 5,
+						paddingVertical: 22,
+						paddingHorizontal: 39,
+					}}
+				/>
+				<View 
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						marginBottom: 39,
+						marginLeft: 16,
+					}}>
+					<View 
+						style={{
+							backgroundColor: "#F5F5F5",
+							paddingVertical: 16,
+							paddingHorizontal: 41,
+							marginRight: 16,
+						}}>
+						<Text 
+							style={{
+								color: "#503B3B",
+								fontSize: 24,
+								fontWeight: "bold",
+							}}>
+							{"Cancel"}
+						</Text>
+					</View>
+					<View 
+						style={{
+							backgroundColor: "#4BA37A",
+							paddingVertical: 16,
+							paddingHorizontal: 40,
+						}}>
+						<Text 
+							style={{
+								color: "#513E3E",
+								fontSize: 24,
+								fontWeight: "bold",
+							}}>
+							{"Submit"}
+						</Text>
+					</View>
+				</View>
+			</ScrollView>
+		</SafeAreaView>
+	)
+}
