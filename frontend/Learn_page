@@ -1,0 +1,132 @@
+import React, {useState} from "react";
+import { SafeAreaView, View, ScrollView, Text, TextInput, } from "react-native";
+export default (props) => {
+	const [textInput1, onChangeTextInput1] = useState('');
+	const [textInput2, onChangeTextInput2] = useState('');
+	const [textInput3, onChangeTextInput3] = useState('');
+	const [textInput4, onChangeTextInput4] = useState('');
+	return (
+		<SafeAreaView 
+			style={{
+				flex: 1,
+				backgroundColor: "#FFFFFF",
+			}}>
+			<ScrollView  
+				style={{
+					flex: 1,
+					backgroundColor: "#FFFFFF",
+				}}>
+				<Text 
+					style={{
+						color: "#39282F",
+						fontSize: 20,
+						fontWeight: "bold",
+						marginTop: 52,
+						marginBottom: 26,
+						marginLeft: 17,
+					}}>
+					{"Learn with GestureAI"}
+				</Text>
+				<TextInput
+					placeholder={"Search for a word"}
+					value={textInput1}
+					onChangeText={onChangeTextInput1}
+					style={{
+						color: "#885C5C",
+						fontSize: 22,
+						marginBottom: 60,
+						marginLeft: 21,
+						backgroundColor: "#E5F5ED",
+						borderRadius: 5,
+						paddingVertical: 22,
+					}}
+				/>
+				<TextInput
+					placeholder={"Alphabets"}
+					value={textInput2}
+					onChangeText={onChangeTextInput2}
+					style={{
+						color: "#6F5151",
+						fontSize: 22,
+						marginBottom: 31,
+						marginHorizontal: 27,
+						backgroundColor: "#E5F5EE",
+						borderRadius: 5,
+						paddingVertical: 21,
+						paddingHorizontal: 37,
+					}}
+				/>
+				<TextInput
+					placeholder={"Numbers"}
+					value={textInput3}
+					onChangeText={onChangeTextInput3}
+					style={{
+						color: "#6F5151",
+						fontSize: 22,
+						marginBottom: 30,
+						marginHorizontal: 27,
+						backgroundColor: "#E5F5EE",
+						borderRadius: 5,
+						paddingVertical: 22,
+						paddingHorizontal: 38,
+					}}
+				/>
+				<TextInput
+					placeholder={"Words"}
+					value={textInput4}
+					onChangeText={onChangeTextInput4}
+					style={{
+						color: "#6F5151",
+						fontSize: 22,
+						marginBottom: 274,
+						marginHorizontal: 27,
+						backgroundColor: "#E5F5EE",
+						borderRadius: 5,
+						paddingVertical: 21,
+						paddingHorizontal: 39,
+					}}
+				/>
+				<View 
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						marginBottom: 39,
+						marginLeft: 16,
+					}}>
+					<View 
+						style={{
+							backgroundColor: "#F5F5F5",
+							paddingVertical: 16,
+							paddingHorizontal: 40,
+							marginRight: 16,
+						}}>
+						<Text 
+							style={{
+								color: "#503B3B",
+								fontSize: 24,
+								fontWeight: "bold",
+							}}>
+							{"Cancel"}
+						</Text>
+					</View>
+					<View 
+						style={{
+							backgroundColor: "#4BA37A",
+							paddingVertical: 16,
+							paddingLeft: 40,
+							paddingRight: 20,
+						}}>
+						<Text 
+							style={{
+								color: "#513E3E",
+								fontSize: 24,
+								fontWeight: "bold",
+							}}>
+							{"Continue"}
+						</Text>
+					</View>
+				</View>
+			</ScrollView>
+		</SafeAreaView>
+	)
+}
