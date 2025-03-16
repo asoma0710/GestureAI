@@ -1,0 +1,20 @@
+[0;1;32m●[0m gestureai-api.service - GestureAI API Service
+     Loaded: loaded (]8;;file://ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01/etc/systemd/system/gestureai-api.service/etc/systemd/system/gestureai-api.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Sat 2025-03-15 06:02:27 UTC; 2min 29s ago
+   Main PID: 727 (python3)
+      Tasks: 1 (limit: 2308)
+     Memory: 72.4M
+        CPU: 1.738s
+     CGroup: /system.slice/gestureai-api.service
+             └─[0;38;5;245m727 /root/GestureAI/myvenv/bin/python3 /root/GestureAI/backend/api.py[0m
+
+Mar 15 06:02:30 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]:         [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+Mar 15 06:02:30 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]:         
+Mar 15 06:02:30 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]:   @app.on_event("startup")
+Mar 15 06:02:30 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]: /root/GestureAI/myvenv/lib/python3.11/site-packages/pydantic/_internal/_config.py:345: UserWarning: Valid config keys have changed in V2:
+Mar 15 06:02:30 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]: * 'orm_mode' has been renamed to 'from_attributes'
+Mar 15 06:02:30 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]:   warnings.warn(message, UserWarning)
+Mar 15 06:02:31 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]: INFO:     Started server process [727]
+Mar 15 06:02:31 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]: INFO:     Waiting for application startup.
+Mar 15 06:02:31 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]: INFO:     Application startup complete.
+Mar 15 06:02:31 ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-01 python3[727]: INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
