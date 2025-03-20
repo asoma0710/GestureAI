@@ -6,7 +6,7 @@ CREATE TABLE users (
     first_name VARCHAR(50),
     last_name VARCHAR(50),
     phone_number VARCHAR(20),
-    profile_picture TEXT,
+    profile_picture BYTEA,  -- changed from TEXT to BYTEA
     role VARCHAR(50) DEFAULT 'user',
     is_active BOOLEAN DEFAULT TRUE,
     is_verified BOOLEAN DEFAULT FALSE,
