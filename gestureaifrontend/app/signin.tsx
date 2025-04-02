@@ -36,7 +36,9 @@ const SignInScreen: React.FC<SignInProps> = ({ navigate, onLoginSuccess }) => {
         console.log("Logged in:", data);
         // Call the onLoginSuccess callback with the returned userId.
         // Data may have userId or id as key, so we check both.
-        onLoginSuccess(data.userId || data.id);
+        onLoginSuccess(data.userid || data.id || data.userId);
+        console.log("userid  in:", data.userid);
+
       } else {
         // If the response is not ok, parse the error response.
         const errorData = await response.json();
