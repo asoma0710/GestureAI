@@ -143,6 +143,9 @@ const styles = StyleSheet.create({
     padding: 10,                  // Internal padding.
     marginBottom: 10,             // Spacing below each input.
     borderRadius: 5,              // Rounded corners.
+    fontSize: 16,                 // Font size.
+    textAlign: "left",           // Align text to the left.
+    backgroundColor: '#f9f9f9',   // Light grey background.
   },
   // Button style: background color, padding, rounded corners, full width, and centered content.
   button: {

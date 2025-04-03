@@ -151,6 +151,9 @@ const styles = StyleSheet.create({
     padding: 10,                   // Padding inside the input.
     marginBottom: 10,              // Space below each input.
     borderRadius: 5,               // Slightly rounded corners.
+    fontSize: 16,                 // Font size.
+    textAlign: "left",           // Align text to the left.
+    backgroundColor: '#f9f9f9',   // Light grey background.
   },
   // Style for the sign-in button.
   button: {

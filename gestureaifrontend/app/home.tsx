@@ -1,22 +1,70 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect, useRef} from "react";
+import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { Camera, CameraType, FlashMode, CameraView, useCameraPermissions } from "expo-camera";
+import * as MediaLibrary from 'expo-media-library';
 
+export default function Home(){
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
 
-type HomeProps = {
-  userId?: string | null;
-};
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
 
-export default function Home({ userId }: HomeProps) {
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Home Screen</Text>
-      {userId && <Text style={styles.subText}>User ID: {userId}</Text>}
+      <CameraView style={styles.camera} facing={facing}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  text: { fontSize: 24 },
-  subText: { fontSize: 16, marginTop: 10 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  message: {
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
 });
