@@ -1,22 +1,69 @@
-// File: index.tsx
-import React from "react";
-import { View, Image, StyleSheet, ImageSourcePropType } from "react-native";
+// AppContainer.tsx
+import React, { useState, useEffect } from "react";
+import { View, ActivityIndicator } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import { Ionicons } from "@expo/vector-icons";
+
+// Import your screens (ensure these files exist)
 import SignIn from "./signin";
 import SignUp from "./signup";
 import Home from "./home";
 import Shop from "./shop";
 import Account from "./account";
+import EditProfile from "./editprofile";
 import Learn from "./learn";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
 
-// ----- Define the Bottom Tab Navigator inline -----
-const Tab = createBottomTabNavigator();
-function BottomNavigator() {
+export type RootTabParamList = {
+  Home: undefined;
+  Shop: undefined;
+  AccountStack: undefined;
+  Learn: undefined;
+};
+
+const Tab = createBottomTabNavigator<RootTabParamList>();
+
+// Define the Account stack parameter list.
+export type AccountStackParamList = {
+  AccountMain: undefined;
+  EditProfile: { userId: string };
+};
+
+const AccountStack = createStackNavigator<AccountStackParamList>();
+
+function AccountNavigator({
+  userId,
+  onLogout,
+}: {
+  userId: string;
+  onLogout: () => void;
+}) {
+  return (
+    <AccountStack.Navigator screenOptions={{ headerShown: false }}>
+      <AccountStack.Screen name="AccountMain">
+        {(props) => <Account {...props} userId={userId} onLogout={onLogout} />}
+      </AccountStack.Screen>
+      <AccountStack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        // Optionally add options for header, title, etc.
+      />
+    </AccountStack.Navigator>
+  );
+}
+
+function AppNavigator({
+  userId,
+  onLogout,
+}: {
+  userId: string;
+  onLogout: () => void;
+}) {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false,  // <-- Hide the header
+        headerShown: false,
         tabBarActiveTintColor: "#3F6E57",
         tabBarInactiveTintColor: "gray",
       }}
@@ -42,15 +89,17 @@ function BottomNavigator() {
         }}
       />
       <Tab.Screen
-        name="Account"
-        component={Account}
+        name="AccountStack"
         options={{
+          tabBarLabel: "Account",
           tabBarIcon: ({ focused, color, size }) => {
             const iconName = focused ? "person" : "person-outline";
             return <Ionicons name={iconName} size={size} color={color} />;
           },
         }}
-      />
+      >
+        {() => <AccountNavigator userId={userId} onLogout={onLogout} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Learn"
         component={Learn}
@@ -65,130 +114,48 @@ function BottomNavigator() {
   );
 }
 
-// ----- OOP Screen Management -----
+export default function AppContainer() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [currentScreen, setCurrentScreen] = useState<
+    "Splash" | "SignIn" | "SignUp"
+  >("Splash");
 
-abstract class BaseScreen {
-  name: string;
-  constructor(name: string) {
-    this.name = name;
-  }
-  abstract render(): React.ReactNode;
-}
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentScreen("SignIn");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
-// SplashScreen displays the logo
-class SplashScreen extends BaseScreen {
-  imageSource: ImageSourcePropType;
-  constructor(name: string, imageSource: ImageSourcePropType) {
-    super(name);
-    this.imageSource = imageSource;
-  }
-  render() {
+  const handleLoginSuccess = (loggedInUserId: string) => {
+    setIsLoggedIn(true);
+    setUserId(loggedInUserId);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserId(null);
+    setCurrentScreen("SignIn");
+  };
+
+  if (currentScreen === "Splash") {
     return (
-      <View style={styles.container}>
-        <Image source={this.imageSource} style={styles.logo} />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
+
+  return (
+    <NavigationContainer>
+      {isLoggedIn && userId ? (
+        <AppNavigator userId={userId} onLogout={handleLogout} />
+      ) : currentScreen === "SignIn" ? (
+        <SignIn navigate={setCurrentScreen} onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <SignUp navigate={setCurrentScreen} />
+      )}
+    </NavigationContainer>
+  );
 }
-
-// Wrapper for SignIn screen
-class SignInScreenWrapper extends BaseScreen {
-  navigate: (screenName: string) => void;
-  constructor(navigate: (screenName: string) => void) {
-    super("SignIn");
-    this.navigate = navigate;
-  }
-  render() {
-    return <SignIn navigate={this.navigate} />;
-  }
-}
-
-// Wrapper for SignUp screen
-class SignUpScreenWrapper extends BaseScreen {
-  navigate: (screenName: string) => void;
-  constructor(navigate: (screenName: string) => void) {
-    super("SignUp");
-    this.navigate = navigate;
-  }
-  render() {
-    return <SignUp navigate={this.navigate} />;
-  }
-}
-
-// Wrapper for BottomNavigator (the bottom tab navigator)
-class AppNavigatorWrapper extends BaseScreen {
-  navigate: (screenName: string) => void;
-  constructor(navigate: (screenName: string) => void) {
-    super("AppNavigator");
-    this.navigate = navigate;
-  }
-  render() {
-    return <BottomNavigator />;
-  }
-}
-
-// ScreenManager to manage screens
-class ScreenManager {
-  screens: BaseScreen[];
-  constructor() {
-    this.screens = [];
-  }
-  addScreen(screen: BaseScreen): void {
-    this.screens.push(screen);
-  }
-  getScreenByName(name: string): BaseScreen | undefined {
-    return this.screens.find((screen) => screen.name === name);
-  }
-}
-
-interface GestureAIAppState {
-  currentScreen: string;
-}
-
-// Root component
-export default class GestureAIApp extends React.Component<{}, GestureAIAppState> {
-  screenManager: ScreenManager;
-  splashScreen: SplashScreen;
-  signInScreen: SignInScreenWrapper;
-  signUpScreen: SignUpScreenWrapper;
-  appNavigatorScreen: AppNavigatorWrapper;
-
-  constructor(props: {}) {
-    super(props);
-    this.state = { currentScreen: "Splash" };
-    this.screenManager = new ScreenManager();
-
-    // Create screen instances
-    this.splashScreen = new SplashScreen("Splash", require("../assets/images/gestureailogo.png"));
-    this.signInScreen = new SignInScreenWrapper(this.navigate.bind(this));
-    this.signUpScreen = new SignUpScreenWrapper(this.navigate.bind(this));
-    this.appNavigatorScreen = new AppNavigatorWrapper(this.navigate.bind(this));
-
-    // Register screens
-    this.screenManager.addScreen(this.splashScreen);
-    this.screenManager.addScreen(this.signInScreen);
-    this.screenManager.addScreen(this.signUpScreen);
-    this.screenManager.addScreen(this.appNavigatorScreen);
-  }
-
-  navigate(screenName: string) {
-    this.setState({ currentScreen: screenName });
-  }
-
-  componentDidMount() {
-    // After 2 seconds, switch from Splash to SignIn
-    setTimeout(() => {
-      this.setState({ currentScreen: "SignIn" });
-    }, 2000);
-  }
-
-  render() {
-    const activeScreen = this.screenManager.getScreenByName(this.state.currentScreen);
-    return activeScreen ? activeScreen.render() : <View />;
-  }
-}
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  logo: { width: 200, height: 200, resizeMode: "contain" },
-});

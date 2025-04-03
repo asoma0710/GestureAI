@@ -1,12 +1,11 @@
 // AppContainer.tsx
 import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
 
-// Import your screens (ensure these files exist)
+// Import your screens
 import SignIn from "./signin";
 import SignUp from "./signup";
 import Home from "./home";
@@ -147,8 +146,9 @@ export default function AppContainer() {
     );
   }
 
+  // Removed the NavigationContainer wrapper.
   return (
-    <NavigationContainer>
+    <>
       {isLoggedIn && userId ? (
         <AppNavigator userId={userId} onLogout={handleLogout} />
       ) : currentScreen === "SignIn" ? (
@@ -156,6 +156,6 @@ export default function AppContainer() {
       ) : (
         <SignUp navigate={setCurrentScreen} />
       )}
-    </NavigationContainer>
+    </>
   );
 }
