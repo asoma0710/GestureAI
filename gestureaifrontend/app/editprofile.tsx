@@ -48,21 +48,17 @@ const getBase64FromUri = async (uri: string): Promise<string> => {
   return base64;
 };
 
-export default function EditProfile({}: EditProfileProps) {
-  // Get navigation and route parameters
+function EditProfile({}: EditProfileProps) {
   const route = useRoute<any>();
   const navigation = useNavigation();
   const { userId } = route.params;
 
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-
-  // Local state for editable fields
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  // Fetch user data on mount
   useEffect(() => {
     if (!userId) {
       Alert.alert("Error", "No userId provided.");
@@ -85,7 +81,6 @@ export default function EditProfile({}: EditProfileProps) {
     })();
   }, [userId]);
 
-  // Pick an image from the gallery
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -114,7 +109,6 @@ export default function EditProfile({}: EditProfileProps) {
     }
   };
 
-  // Take a photo with the camera
   const handleTakePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
@@ -142,12 +136,10 @@ export default function EditProfile({}: EditProfileProps) {
     }
   };
 
-  // Placeholder for Change Password
   const handleChangePassword = () => {
     Alert.alert("Change Password", "Placeholder for changing password.");
   };
 
-  // Save the updated user data
   const handleSave = async () => {
     try {
       if (!userId) return;
@@ -167,7 +159,6 @@ export default function EditProfile({}: EditProfileProps) {
     }
   };
 
-  // Cancel button navigates back without saving
   const handleCancel = () => {
     navigation.goBack();
   };
@@ -310,10 +301,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
   },
 });
 

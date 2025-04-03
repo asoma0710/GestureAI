@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
+
 type HomeProps = {
   userId?: string | null;
 };

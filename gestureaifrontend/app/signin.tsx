@@ -1,7 +1,7 @@
 // Import React and hooks for managing state.
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // Import essential React Native components for building the UI.
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity, Animated, Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
 
 // Define the prop types for SignInScreen.
 // "navigate" is a function that switches screens (either "SignIn" or "SignUp").
@@ -19,6 +19,31 @@ const SignInScreen: React.FC<SignInProps> = ({ navigate, onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   // Local state for error messages; initialized as an empty string.
   const [error, setError] = useState<string>("");
+
+  const translateY = useRef(new Animated.Value(0)).current; // Controls screen movement
+
+  useEffect(() => {
+    const keyboardShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
+      Animated.timing(translateY, {
+        toValue: -event.endCoordinates.height / 2, // Move screen up by half the keyboard height
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const keyboardHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      Animated.timing(translateY, {
+        toValue: 0, // Reset screen position
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      keyboardShowListener.remove();
+      keyboardHideListener.remove();
+    };
+  }, []);
 
   // Function to handle the sign-in process.
   const handleSignIn = async () => {
@@ -66,35 +91,49 @@ const SignInScreen: React.FC<SignInProps> = ({ navigate, onLoginSuccess }) => {
 
   // Render the SignIn screen UI.
   return (
-    <View style={styles.container}>
-      {/* Screen title */}
-      <Text style={styles.title}>Sign In</Text>
-      {/* If there's an error, display it; otherwise, render nothing */}
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      {/* TextInput for the user identifier (username, email, or phone) */}
-      <TextInput
-        style={styles.input}
-        placeholder="Username, Email, or Phone"
-        value={identifier}
-        onChangeText={setIdentifier}  // Update identifier state when text changes.
-      />
-      {/* TextInput for the password with secure text entry enabled */}
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}      // Update password state when text changes.
-        secureTextEntry                 // Hide the text input for security.
-      />
-      {/* Touchable button to trigger the sign-in process */}
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
-      {/* Link to navigate to the SignUp screen if the user doesn't have an account */}
-      <TouchableOpacity onPress={() => navigate("SignUp")}>
-        <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Animated.View style={[styles.container, { transform: [{ translateY }] }]}>
+      
+        {/* Logo */}
+        <Image source={require('../assets/images/gestureailogo-transparent.png')} style={styles.logo} />
+      
+        {/* Sign In Text */}
+        <Text style={styles.signInText}>Sign In</Text>
+
+        {/* Input Container */}
+        <View style={styles.inputContainer}>
+        
+          {/* If there's an error, display it; otherwise, render nothing */}
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+
+          {/* TextInput for the user identifier (username, email, or phone) */}
+          <TextInput
+            style={styles.input}
+            placeholder="Username, Email, or Phone"
+            value={identifier}
+            onChangeText={setIdentifier}  // Update identifier state when text changes.
+          />
+
+          {/* TextInput for the password with secure text entry enabled */}
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}      // Update password state when text changes.
+            secureTextEntry                 // Hide the text input for security.
+          />
+          {/* Touchable button to trigger the sign-in process */}
+          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+            <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
+          {/* Link to navigate to the SignUp screen if the user doesn't have an account */}
+          <TouchableOpacity onPress={() => navigate("SignUp")}>
+            <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
+
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -122,10 +161,30 @@ const styles = StyleSheet.create({
     alignItems: "center",          // Center text horizontally.
     marginBottom: 10,              // Space below the button.
   },
+
+  inputContainer: {
+    width: '100%',
+    marginTop: 20,
+  },
   // Style for the button text.
   buttonText: { color: "#fff", fontSize: 16 },
+
+  // Style for the "Sign In" text.
+  signInText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#3F6E57",
+    marginBottom: 20,
+  },
+  // Style for the animated logo.
+  logo: {
+    width: 320,
+    height: 320,
+    resizeMode: 'contain',
+    marginBottom: 2,
+  },
   // Style for the sign-up link text.
-  linkText: { color: "#3F6E57", fontSize: 16 },
+  linkText: { color: "#3F6E57", fontSize: 16, textAlign: "center" },
   // Style for error messages.
   error: { color: "red", marginBottom: 10 },
 });
