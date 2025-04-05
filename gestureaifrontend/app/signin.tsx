@@ -110,6 +110,7 @@ const SignInScreen: React.FC<SignInProps> = ({ navigate, onLoginSuccess }) => {
           <TextInput
             style={styles.input}
             placeholder="Username, Email, or Phone"
+            placeholderTextColor={"#888"}  // Placeholder text color.
             value={identifier}
             onChangeText={setIdentifier}  // Update identifier state when text changes.
           />
@@ -118,6 +119,7 @@ const SignInScreen: React.FC<SignInProps> = ({ navigate, onLoginSuccess }) => {
           <TextInput
             style={styles.input}
             placeholder="Password"
+            placeholderTextColor={"#888"}  // Placeholder text color.
             value={password}
             onChangeText={setPassword}      // Update password state when text changes.
             secureTextEntry                 // Hide the text input for security.
