@@ -1,3 +1,4 @@
+// EditProfile.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -15,9 +16,7 @@ import * as FileSystem from "expo-file-system";
 
 const BASE_URL = "http://24.199.96.243:8000";
 
-type EditProfileProps = {};
-
-// Fetch user data from the API using userId
+// Fetch user data from the API using the provided userId
 const getUserById = async (userId: string) => {
   const id = parseInt(userId, 10);
   const response = await fetch(`${BASE_URL}/appusers/${id}`);
@@ -48,9 +47,9 @@ const getBase64FromUri = async (uri: string): Promise<string> => {
   return base64;
 };
 
-function EditProfile({}: EditProfileProps) {
+function EditProfile() {
   const route = useRoute<any>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { userId } = route.params;
 
   const [loading, setLoading] = useState(true);
@@ -58,6 +57,8 @@ function EditProfile({}: EditProfileProps) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   useEffect(() => {
     if (!userId) {
@@ -72,6 +73,8 @@ function EditProfile({}: EditProfileProps) {
         setUsername(fetchedUser.username || "");
         setEmail(fetchedUser.email || "");
         setPhoneNumber(fetchedUser.phone_number || "");
+        setFirstName(fetchedUser.first_name || "");
+        setLastName(fetchedUser.last_name || "");
       } catch (error) {
         console.error("Error fetching user:", error);
         Alert.alert("Error", "Could not fetch user data.");
@@ -136,23 +139,28 @@ function EditProfile({}: EditProfileProps) {
     }
   };
 
+  // Navigate to ChangePassword screen (which is part of your AccountStack)
   const handleChangePassword = () => {
-    Alert.alert("Change Password", "Placeholder for changing password.");
+    navigation.navigate("ChangePassword", { userId });
   };
 
   const handleSave = async () => {
     try {
       if (!userId) return;
+      // Build payload with all fields to update
       const payload = {
         username,
         email,
         phone_number: phoneNumber,
+        first_name: firstName,
+        last_name: lastName,
         profile_picture: user?.profile_picture || "",
       };
       const updated = await updateUser(userId, payload);
       setUser(updated);
       Alert.alert("Success", "Profile updated!");
-      navigation.goBack();
+      // Optionally pass updated data back to the Account screen
+      navigation.navigate("AccountMain", { updatedUser: updated });
     } catch (err) {
       console.error("Error updating user:", err);
       Alert.alert("Error", "Could not update user profile.");
@@ -173,35 +181,34 @@ function EditProfile({}: EditProfileProps) {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header with Cancel button and title */}
+      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={handleCancel}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Profile</Text>
-        <View style={{ width: 60 }} /> {/* Placeholder for alignment */}
+        <View style={{ width: 60 }} />
       </View>
 
+      {/* Input Fields */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          value={username}
-          onChangeText={setUsername}
-        />
+        <TextInput style={styles.input} value={username} onChangeText={setUsername} />
 
         <Text style={styles.label}>Email</Text>
         <TextInput style={styles.input} value={email} onChangeText={setEmail} />
 
+        <Text style={styles.label}>First Name</Text>
+        <TextInput style={styles.input} value={firstName} onChangeText={setFirstName} />
+
+        <Text style={styles.label}>Last Name</Text>
+        <TextInput style={styles.input} value={lastName} onChangeText={setLastName} />
+
         <Text style={styles.label}>Phone Number</Text>
-        <TextInput
-          style={styles.input}
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-        />
+        <TextInput style={styles.input} value={phoneNumber} onChangeText={setPhoneNumber} />
       </View>
 
-      {/* Buttons to update profile picture */}
+      {/* Profile Picture Buttons */}
       <View style={styles.photoContainer}>
         <TouchableOpacity style={styles.photoButton} onPress={handlePickImage}>
           <Text style={styles.photoButtonText}>Pick from Gallery</Text>
@@ -235,62 +242,18 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: 10,
   },
-  cancelText: {
-    fontSize: 16,
-    color: "#E63946",
-    width: 60,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-  },
-  inputContainer: {
-    marginVertical: 10,
-  },
-  label: {
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 5,
-    color: "#333",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-  },
-  photoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginVertical: 15,
-  },
-  photoButton: {
-    backgroundColor: "#3F6E57",
-    padding: 10,
-    borderRadius: 5,
-  },
-  photoButtonText: {
-    color: "#fff",
-    fontSize: 14,
-  },
-  linkButton: {
-    alignItems: "center",
-    marginVertical: 5,
-  },
-  linkButtonText: {
-    color: "#3F6E57",
-    textDecorationLine: "underline",
-  },
+  cancelText: { fontSize: 16, color: "#E63946", width: 60 },
+  headerTitle: { fontSize: 20, fontWeight: "bold" },
+  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, padding: 16, backgroundColor: "#f5f5f5" },
+  inputContainer: { marginVertical: 10 },
+  label: { fontWeight: "bold", marginTop: 10, marginBottom: 5, color: "#333" },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 5 },
+  photoContainer: { flexDirection: "row", justifyContent: "space-evenly", marginVertical: 15 },
+  photoButton: { backgroundColor: "#3F6E57", padding: 10, borderRadius: 5 },
+  photoButtonText: { color: "#fff", fontSize: 14 },
+  linkButton: { alignItems: "center", marginVertical: 5 },
+  linkButtonText: { color: "#3F6E57", textDecorationLine: "underline" },
   saveButton: {
     backgroundColor: "#3F6E57",
     padding: 15,
@@ -298,10 +261,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
   },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
+  saveButtonText: { color: "#fff", fontSize: 16 },
 });
 
 export default EditProfile;

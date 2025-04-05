@@ -13,6 +13,8 @@ import Shop from "./shop";
 import Account from "./account";
 import EditProfile from "./editprofile";
 import Learn from "./learn";
+import ChangePassword from "./changepassword";
+
 
 export type RootTabParamList = {
   Home: undefined;
@@ -31,6 +33,7 @@ export type AccountStackParamList = {
 
 const AccountStack = createStackNavigator<AccountStackParamList>();
 
+// In AppContainer.tsx (update AccountNavigator)
 function AccountNavigator({
   userId,
   onLogout,
@@ -43,14 +46,12 @@ function AccountNavigator({
       <AccountStack.Screen name="AccountMain">
         {(props) => <Account {...props} userId={userId} onLogout={onLogout} />}
       </AccountStack.Screen>
-      <AccountStack.Screen
-        name="EditProfile"
-        component={EditProfile}
-        // Optionally add options for header, title, etc.
-      />
+      <AccountStack.Screen name="EditProfile" component={EditProfile} />
+      <AccountStack.Screen name="ChangePassword" component={ChangePassword} />
     </AccountStack.Navigator>
   );
 }
+
 
 function AppNavigator({
   userId,

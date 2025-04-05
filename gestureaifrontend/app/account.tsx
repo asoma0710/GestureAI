@@ -1,3 +1,4 @@
+// Account.tsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -11,18 +12,11 @@ import {
   Modal,
   TextInput,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { AccountStackParamList } from "./index";
-
-type AccountProps = {
-  userId: string | null;
-  onLogout: () => void;
-};
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 
 const BASE_URL = "http://24.199.96.243:8000";
 
-// Fetch user data from the API using the provided userId
+// Fetch user data using the provided userId
 const getUserById = async (userId: string) => {
   const id = parseInt(userId, 10);
   const response = await fetch(`${BASE_URL}/appusers/${id}`);
@@ -32,7 +26,7 @@ const getUserById = async (userId: string) => {
   return response.json();
 };
 
-// Send user feedback using a POST request to the /feedback route
+// Send feedback via API
 const sendFeedback = async (userId: string, content: string) => {
   const id = parseInt(userId, 10);
   const payload = { user_id: id, content };
@@ -47,34 +41,44 @@ const sendFeedback = async (userId: string, content: string) => {
   return response.json();
 };
 
-const Account = ({ userId, onLogout }: AccountProps) => {
-  // Define a typed navigation prop from our AccountStack
-  const navigation = useNavigation<StackNavigationProp<AccountStackParamList, "AccountMain">>();
+type AccountProps = {
+  userId: string;
+  onLogout: () => void;
+};
+
+function Account({ userId, onLogout }: AccountProps) {
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
   const [feedbackContent, setFeedbackContent] = useState("");
 
-  // Fetch user data when the component mounts or when userId changes
-  useEffect(() => {
-    if (userId) {
-      (async () => {
-        try {
-          const fetchedUser = await getUserById(userId);
-          setUser(fetchedUser);
-        } catch (error: any) {
-          console.error("Error fetching user:", error);
-          Alert.alert("Error", "Could not fetch user data.");
-        } finally {
-          setLoading(false);
-        }
-      })();
-    } else {
-      setLoading(false);
-    }
-  }, [userId]);
+  // Re-fetch user data when the screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userId) {
+        setLoading(true);
+        getUserById(userId)
+          .then((fetchedUser) => setUser(fetchedUser))
+          .catch((error) => {
+            console.error("Error fetching user:", error);
+            Alert.alert("Error", "Could not fetch user data.");
+          })
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
+    }, [userId])
+  );
 
-  // Display a loading indicator while fetching data
+  // Check for updated user data passed via navigation params
+  useEffect(() => {
+    if (route.params && route.params.updatedUser) {
+      setUser(route.params.updatedUser);
+    }
+  }, [route.params]);
+
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -83,14 +87,12 @@ const Account = ({ userId, onLogout }: AccountProps) => {
     );
   }
 
-  // Use a default avatar if no profile picture is available
   const defaultAvatar = require("../assets/images/react-logo.png");
   const profileSource =
     user && user.profile_picture
       ? { uri: `data:image/jpeg;base64,${user.profile_picture}` }
       : defaultAvatar;
 
-  // Navigate to the EditProfile screen
   const handleEditProfile = () => {
     if (!userId) {
       Alert.alert("Error", "No userId found.");
@@ -99,30 +101,22 @@ const Account = ({ userId, onLogout }: AccountProps) => {
     navigation.navigate("EditProfile", { userId });
   };
 
-  // Navigate to Home (assumes "Home" route exists in your global navigator)
   const handleGoHome = () => {
-    navigation.navigate("Home" as any);
+    navigation.navigate("Home");
   };
 
-  // Navigate to Shop (assumes "Shop" route exists)
   const handleGoShop = () => {
-    navigation.navigate("Shop" as any);
+    navigation.navigate("Shop");
   };
 
-  // Show contact details in an alert
   const handleContactUs = () => {
-    Alert.alert(
-      "Contact Us",
-      "Phone: +1 9408828728\nEmail: arunsoma1998@gmail.com"
-    );
+    Alert.alert("Contact Us", "Phone: +1 9408828728\nEmail: arunsoma1998@gmail.com");
   };
 
-  // Open the feedback modal
   const handleFeedback = () => {
     setFeedbackModalVisible(true);
   };
 
-  // Send feedback via the API
   const handleSendFeedback = async () => {
     if (!userId) {
       Alert.alert("Error", "No userId found.");
@@ -145,7 +139,7 @@ const Account = ({ userId, onLogout }: AccountProps) => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header with profile image, username, and an Edit Profile link */}
+      {/* Header with profile image and Edit Profile link */}
       <View style={styles.header}>
         <Image source={profileSource} style={styles.profileImage} />
         <Text style={styles.username}>{user?.username || "Loading..."}</Text>
@@ -170,17 +164,13 @@ const Account = ({ userId, onLogout }: AccountProps) => {
         <Text style={styles.sectionTitle}>SETTINGS</Text>
         <TouchableOpacity
           style={styles.itemRow}
-          onPress={() =>
-            Alert.alert("Notifications", "Notification settings...")
-          }
+          onPress={() => Alert.alert("Notifications", "Notification settings...")}
         >
           <Text style={styles.itemText}>Notifications</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.itemRow}
-          onPress={() =>
-            Alert.alert("Subscribe", "Subscription details...")
-          }
+          onPress={() => Alert.alert("Subscribe", "Subscription details...")}
         >
           <Text style={styles.itemText}>Subscribe</Text>
         </TouchableOpacity>
@@ -199,7 +189,6 @@ const Account = ({ userId, onLogout }: AccountProps) => {
         >
           <Text style={styles.itemText}>Train the model</Text>
         </TouchableOpacity>
-        {/* Sign Out option under Settings */}
         <TouchableOpacity style={styles.itemRow} onPress={onLogout}>
           <Text style={[styles.itemText, { color: "#E63946" }]}>Sign Out</Text>
         </TouchableOpacity>
@@ -249,84 +238,25 @@ const Account = ({ userId, onLogout }: AccountProps) => {
       </Modal>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f5f5f5" },
   center: { justifyContent: "center", alignItems: "center" },
-  header: {
-    backgroundColor: "#fff",
-    alignItems: "center",
-    paddingTop: 40,
-    paddingBottom: 20,
-    marginBottom: 10,
-    elevation: 2,
-  },
-  profileImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    marginBottom: 5,
-    backgroundColor: "#eee",
-  },
+  header: { backgroundColor: "#fff", alignItems: "center", paddingTop: 40, paddingBottom: 20, marginBottom: 10, elevation: 2 },
+  profileImage: { width: 90, height: 90, borderRadius: 45, marginBottom: 5, backgroundColor: "#eee" },
   username: { fontSize: 18, fontWeight: "bold" },
-  editProfileText: {
-    marginTop: 5,
-    color: "#3F6E57",
-    textDecorationLine: "underline",
-  },
-  section: {
-    backgroundColor: "#fff",
-    marginVertical: 5,
-    padding: 15,
-  },
-  sectionTitle: {
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
-  },
-  itemRow: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
+  editProfileText: { marginTop: 5, color: "#3F6E57", textDecorationLine: "underline" },
+  section: { backgroundColor: "#fff", marginVertical: 5, padding: 15 },
+  sectionTitle: { fontWeight: "bold", marginBottom: 10, color: "#333" },
+  itemRow: { paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "#eee" },
   itemText: { fontSize: 16, color: "#555" },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "85%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  modalInput: {
-    height: 100,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    textAlignVertical: "top",
-    padding: 10,
-    marginBottom: 10,
-  },
-  modalButtonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  modalButton: {
-    padding: 12,
-    borderRadius: 5,
-    minWidth: 80,
-    alignItems: "center",
-  },
+  modalBackground: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" },
+  modalContainer: { width: "85%", backgroundColor: "#fff", borderRadius: 10, padding: 20 },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  modalInput: { height: 100, borderWidth: 1, borderColor: "#ccc", borderRadius: 5, textAlignVertical: "top", padding: 10, marginBottom: 10 },
+  modalButtonRow: { flexDirection: "row", justifyContent: "space-between" },
+  modalButton: { padding: 12, borderRadius: 5, minWidth: 80, alignItems: "center" },
 });
 
 export default Account;
