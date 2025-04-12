@@ -1,6 +1,6 @@
 // AppContainer.tsx
 import React, { useState, useEffect } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, SafeAreaView } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,13 +12,16 @@ import Home from "./home";
 import Shop from "./shop";
 import Account from "./account";
 import EditProfile from "./editprofile";
-import Learn from "./learn";
+import TranscribeUrlAudio from "./learn";
+import Merch from "./merch";
+//import TranscribeScreen from "./test_voice";
 
 export type RootTabParamList = {
   Home: undefined;
   Shop: undefined;
   AccountStack: undefined;
-  Learn: undefined;
+  TranscribeUrlAudio: undefined;
+  Merch: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -100,16 +103,36 @@ function AppNavigator({
         {() => <AccountNavigator userId={userId} onLogout={onLogout} />}
       </Tab.Screen>
       <Tab.Screen
-        name="Learn"
-        component={Learn}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            const iconName = focused ? "book" : "book-outline";
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        }}
-      />
-    </Tab.Navigator>
+          name="Merch"
+          component={Merch}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              const iconName = focused ? "gift" : "gift-outline";
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+          }}
+        />        
+        <Tab.Screen
+          name="TranscribeUrlAudio"
+          component={TranscribeUrlAudio}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              const iconName = focused ? "book" : "book-outline";
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
+          {/* <Tab.Screen
+            name="TranscribeScreen"
+            component={TranscribeScreen}
+            options={{
+              tabBarIcon: ({ focused, color, size }) => {
+                const iconName = focused ? "book" : "book-outline";
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+            }}
+          /> */}
+        </Tab.Navigator>
   );
 }
 

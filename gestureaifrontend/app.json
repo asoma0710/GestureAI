@@ -15,7 +15,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.tarismajor.gestureaifrontend"
     },
     "web": {
       "bundler": "metro",
@@ -27,15 +31,24 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/gestureailogo.png",
+          "image": "./assets/images/gestureailogo-transparent.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "45d493a9-7ab3-4276-a07e-9355ab49eb4f"
+      }
     }
   }
 }

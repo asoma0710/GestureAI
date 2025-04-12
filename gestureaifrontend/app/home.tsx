@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,68 +6,123 @@ import {
   Button,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
+  Platform,
   KeyboardAvoidingView,
   ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Platform,
-} from "react-native";
+} from 'react-native';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import axios from 'axios';
 
-import { Camera, CameraType, FlashMode, CameraView, useCameraPermissions } from "expo-camera";
+const ASSEMBLY_API_KEY = 'd3f7bc3d37234e61ad5345ac1eee4e64';
+const HARDCODED_AUDIO_URL = 'https://kowkdr1ycumpkmzt.public.blob.vercel-storage.com/Sunny-yXevWfsebfgMs3ZvNxC5qMRVrKVLJ6.mp3'; // Replace with your own URL
 
-export default function Home(){
+export default function Home() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [text, setText] = useState('');
 
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  if (!permission.granted) {
-    // Camera permissions are not granted yet.
+  const toggleCameraFacing = () => {
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
+  };
+
+  const handlePress = async () => {
+    if (isRecording) {
+      // "Stop Recording" pressed — trigger transcription
+      setLoading(true);
+      try {
+        const transcriptRes = await axios.post(
+          'https://api.assemblyai.com/v2/transcript',
+          { audio_url: HARDCODED_AUDIO_URL },
+          {
+            headers: {
+              authorization: ASSEMBLY_API_KEY,
+              'content-type': 'application/json',
+            },
+          }
+        );
+
+        const transcriptId = transcriptRes.data.id;
+
+        let completed = false;
+        let finalTranscript = '';
+
+        while (!completed) {
+          const pollingRes = await axios.get(
+            `https://api.assemblyai.com/v2/transcript/${transcriptId}`,
+            {
+              headers: { authorization: ASSEMBLY_API_KEY },
+            }
+          );
+
+          if (pollingRes.data.status === 'completed') {
+            finalTranscript = pollingRes.data.text;
+            completed = true;
+          } else if (pollingRes.data.status === 'error') {
+            throw new Error('Transcription failed');
+          } else {
+            await new Promise((res) => setTimeout(res, 2000));
+          }
+        }
+
+        setTranscript(finalTranscript);
+      } catch (error) {
+        console.error('Error transcribing audio:', error);
+      }
+      setLoading(false);
+    }
+
+    setIsRecording((prev) => !prev);
+  };
+
+  if (!permission) return <View />;
+  if (!permission.granted)
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
-  }
-
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={styles.cameraWrapper}>
-            <CameraView style={styles.camera} facing={facing}>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-                  <Text style={styles.text}>Flip Camera</Text>
-                </TouchableOpacity>
-              </View>
-            </CameraView>
-          </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.cameraWrapper}>
+          <CameraView style={styles.camera} facing={facing}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+                <Text style={styles.text}>Flip Camera</Text>
+              </TouchableOpacity>
+            </View>
+          </CameraView>
+        </View>
 
-          <View style={styles.textBoxWrapper}>
+        <View style={styles.controls}>
+          <Button
+            title={isRecording ? 'Stop Recording' : 'Start Recording'}
+            onPress={handlePress}
+            color="#1e90ff"
+          />
+
+          {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 10 }} />}
+
+          {!loading && transcript !== '' && !isRecording && (
             <TextInput
               style={styles.textBox}
-              placeholder="Enter text here"
-              value={text}
-              onChangeText={setText}
+              value={transcript}
+              placeholder="Transcript will appear here"
+              editable={false}
               multiline
-              returnKeyType="done"
             />
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+          )}
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -101,14 +156,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
   },
-  textBoxWrapper: {
-    flex: 1,
-    padding: 10,
+  controls: {
+    padding: 15,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderColor: '#ccc',
   },
   textBox: {
+    marginTop: 15,
     height: 100,
     fontSize: 16,
     textAlignVertical: 'top',

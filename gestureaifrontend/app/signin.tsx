@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 // Import essential React Native components for building the UI.
 import { View, Text, Image, TextInput, TouchableOpacity, Animated, Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
-
+import { Platform } from "react-native";
 // Define the prop types for SignInScreen.
 // "navigate" is a function that switches screens (either "SignIn" or "SignUp").
 // "onLoginSuccess" is a callback function that takes a userId string when login is successful.
@@ -23,26 +23,29 @@ const SignInScreen: React.FC<SignInProps> = ({ navigate, onLoginSuccess }) => {
   const translateY = useRef(new Animated.Value(0)).current; // Controls screen movement
 
   useEffect(() => {
-    const keyboardShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
-      Animated.timing(translateY, {
-        toValue: -event.endCoordinates.height / 2, // Move screen up by half the keyboard height
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    });
 
-    const keyboardHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      Animated.timing(translateY, {
-        toValue: 0, // Reset screen position
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    });
+    if (Platform.OS !== 'web') {
+      const keyboardShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
+        Animated.timing(translateY, {
+          toValue: -event.endCoordinates.height / 2,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+
+      const keyboardHideListener = Keyboard.addListener('keyboardDidHide', () => {
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
 
     return () => {
       keyboardShowListener.remove();
       keyboardHideListener.remove();
     };
+  }
   }, []);
 
   // Function to handle the sign-in process.
