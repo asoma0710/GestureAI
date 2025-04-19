@@ -1,48 +1,98 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './types'; 
 
-const Shop = ({ name = 'AR Glasses', price = 100.0, quantity = 1 }) => {
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Shop'>;
+
+const Shop = () => {
+  const navigation = useNavigation<NavigationProp>();
+
+  const goToDetails = (item: RootStackParamList['Details']) => {
+    navigation.navigate('Details', item);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Products Section */}
         <Text style={styles.sectionTitle}>Products</Text>
 
-        <View style={styles.container}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require('../assets/images/img1.jpg')}
-              style={styles.image}
-            />
+        <TouchableOpacity
+          onPress={() =>
+            goToDetails({ type: 'product', name: 'AR Glasses', price: 100, quantity: 1 })
+          }
+        >
+          <View style={styles.container}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={require('../assets/images/img1.jpg')}
+                style={styles.image}
+              />
+            </View>
+            <View style={styles.detailsContainer}>
+              <Text style={styles.name}>AR Glasses</Text>
+              <Text style={styles.price}>$100</Text>
+              <Text style={styles.quantity}>1 available</Text>
+            </View>
           </View>
-          <View style={styles.detailsContainer}>
-            <Text style={styles.name}>{name}</Text>
-            <Text style={styles.price}>${price}</Text>
-            <Text style={styles.quantity}>{quantity} available</Text>
-          </View>
-        </View>
+        </TouchableOpacity>
 
-        {/* Subscriptions Section */}
         <Text style={styles.sectionTitle}>Subscriptions</Text>
 
-        <View style={styles.subscriptionBox}>
-          <Text style={styles.subscriptionTitle}>Silver</Text>
-          <Text style={styles.subscriptionDescription}>Basic features for casual users.</Text>
-        </View>
-
-        <View style={styles.subscriptionBox}>
-          <Text style={styles.subscriptionTitle}>Gold</Text>
-          <Text style={styles.subscriptionDescription}>Advanced features and support.</Text>
-        </View>
-
-        <View style={styles.subscriptionBox}>
-          <Text style={styles.subscriptionTitle}>Platinum</Text>
-          <Text style={styles.subscriptionDescription}>All features + premium support.</Text>
-        </View>
+        {[
+          {
+            name: 'Bronze',
+            description: 'Basic features for casual users.',
+            image: require('../assets/images/bronze.png'),
+          },
+          {
+            name: 'Silver',
+            description: 'Advanced features and support.',
+            image: require('../assets/images/silver.png'),
+          },
+          {
+            name: 'Gold',
+            description: 'All features + premium support.',
+            image: require('../assets/images/gold.png'),
+          },
+        ].map((sub) => (
+          <TouchableOpacity
+            key={sub.name}
+            onPress={() =>
+              goToDetails({
+                type: 'subscription',
+                name: sub.name,
+                price: 100,
+                description: sub.description,
+              })
+            }
+          >
+            <View style={styles.container}>
+              <View style={styles.imageContainer}>
+                <Image source={sub.image} style={styles.image} />
+              </View>
+              <View style={styles.detailsContainer}>
+                <Text style={styles.subscriptionTitle}>{sub.name}</Text>
+                <Text style={styles.subscriptionDescription}>{sub.description}</Text>
+                <Text style={styles.price}>$100</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -53,8 +103,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
-    marginLeft: 10,
-    alignItems: 'center',
+    textAlign: 'center',
   },
   container: {
     flexDirection: 'row',

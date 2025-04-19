@@ -12,9 +12,7 @@ import Home from "./home";
 import Shop from "./shop";
 import Account from "./account";
 import EditProfile from "./editprofile";
-import TranscribeUrlAudio from "./learn";
-import Merch from "./merch";
-//import TranscribeScreen from "./test_voice";
+import Details from "./Details";
 
 export type RootTabParamList = {
   Home: undefined;
@@ -101,38 +99,8 @@ function AppNavigator({
         }}
       >
         {() => <AccountNavigator userId={userId} onLogout={onLogout} />}
-      </Tab.Screen>
-      <Tab.Screen
-          name="Merch"
-          component={Merch}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => {
-              const iconName = focused ? "gift" : "gift-outline";
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-          }}
-        />        
-        <Tab.Screen
-          name="TranscribeUrlAudio"
-          component={TranscribeUrlAudio}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => {
-              const iconName = focused ? "book" : "book-outline";
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-          }}
-        />
-          {/* <Tab.Screen
-            name="TranscribeScreen"
-            component={TranscribeScreen}
-            options={{
-              tabBarIcon: ({ focused, color, size }) => {
-                const iconName = focused ? "book" : "book-outline";
-                return <Ionicons name={iconName} size={size} color={color} />;
-              },
-            }}
-          /> */}
-        </Tab.Navigator>
+      </Tab.Screen>     
+    </Tab.Navigator>
   );
 }
 

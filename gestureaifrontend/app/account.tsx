@@ -178,9 +178,7 @@ const Account = ({ userId, onLogout }: AccountProps) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.itemRow}
-          onPress={() =>
-            Alert.alert("Subscribe", "Subscription details...")
-          }
+          onPress={handleGoShop}
         >
           <Text style={styles.itemText}>Subscribe</Text>
         </TouchableOpacity>
