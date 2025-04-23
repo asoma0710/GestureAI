@@ -15,35 +15,49 @@ type DetailsRouteProp = RouteProp<RootStackParamList, 'Details'>;
 
 const BASE_URL = "http://24.199.96.243:8000";
 
-type AccountProps = {
-  userId: string;
-  onLogout: () => void;
-};
-
-const Details = ({ userId }: AccountProps) => {
+const Details = () => {
   const route = useRoute<DetailsRouteProp>();
-  const { name, price, quantity, description, type } = route.params;
+  const { userId, name, price, quantity, description, type } = route.params;
+
   const [loading, setLoading] = useState(false);
 
   const handlePurchase = async () => {
     setLoading(true);
     try {
-      let subscriptionId: number = 0;
-      let merchandiseId: number = 0;
+      let subscriptionId: number = 5;
+      let merchandiseId: number = 2;
 
       if (type === 'subscription') {
         const subsRes = await fetch(`${BASE_URL}/subscriptions`);
         const subs = await subsRes.json();
-        const matchedSub = subs.find((s: any) => s.plan === name);
+        const matchedSub = subs.find((s: any) => s.name === name);
         if (!matchedSub) throw new Error('Subscription plan not found.');
-        subscriptionId = matchedSub.id;
+        subscriptionId = matchedSub.subscription_id;
       } else if (type === 'product') {
         const merchRes = await fetch(`${BASE_URL}/merchandise`);
         const merch = await merchRes.json();
-        const matchedMerch = merch.find((m: any) => m.name === name);
-        if (!matchedMerch) throw new Error('Merchandise item not found.');
-        merchandiseId = matchedMerch.id;
+      
+        console.log("Fetched merchandise list:", merch.map((m: any) => m.name));
+      
+        const matchedMerch = merch.find(
+          (m: any) => m.name.trim().toLowerCase() === name.trim().toLowerCase()
+        );
+      
+        if (!matchedMerch) {
+          throw new Error(`Merchandise "${name}" not found.`);
+        }
+      
+        if (matchedMerch.quantity <= 0) {
+          throw new Error('Sold Out');
+        }
+      
+        // Use correct key depending on your backend
+        merchandiseId = matchedMerch.id ?? matchedMerch.merchandise_id;
+      
+        console.log("Matched Merchandise:", matchedMerch);
+        console.log("Using merchandise ID:", merchandiseId);
       }
+      
 
       const payload = {
         user_id: parseInt(userId),
@@ -58,7 +72,10 @@ const Details = ({ userId }: AccountProps) => {
         body: JSON.stringify(payload),
       });
 
-      if (!purchaseRes.ok) throw new Error('Failed to complete purchase.');
+      if (!purchaseRes.ok) {
+        const errorText = await purchaseRes.text();
+        throw new Error(`Failed to complete purchase. Payload: ${JSON.stringify(payload)}\nError: ${errorText}`);
+      }
 
       if (subscriptionId) {
         const updateUserRes = await fetch(`${BASE_URL}/appusersupdate/${userId}`, {
@@ -81,6 +98,8 @@ const Details = ({ userId }: AccountProps) => {
     }
   };
 
+  const isSoldOut = quantity !== undefined && quantity <= 0;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -88,9 +107,7 @@ const Details = ({ userId }: AccountProps) => {
 
         <View style={styles.card}>
           <Text style={styles.label}>Type:</Text>
-          <Text style={styles.value}>
-            {type === 'product' ? 'Product' : 'Subscription'}
-          </Text>
+          <Text style={styles.value}>{type === 'product' ? 'Product' : 'Subscription'}</Text>
 
           <Text style={styles.label}>Name:</Text>
           <Text style={styles.value}>{name}</Text>
@@ -101,7 +118,7 @@ const Details = ({ userId }: AccountProps) => {
           {quantity !== undefined && (
             <>
               <Text style={styles.label}>Quantity Available:</Text>
-              <Text style={styles.value}>{quantity}</Text>
+              <Text style={styles.value}>{isSoldOut ? 'Sold Out' : quantity}</Text>
             </>
           )}
 
@@ -113,11 +130,17 @@ const Details = ({ userId }: AccountProps) => {
           )}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handlePurchase} disabled={loading}>
+        <TouchableOpacity
+          style={[styles.button, isSoldOut && { backgroundColor: 'gray' }]}
+          onPress={handlePurchase}
+          disabled={loading || isSoldOut}
+        >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Buy Now</Text>
+            <Text style={styles.buttonText}>
+              {isSoldOut ? 'Sold Out' : 'Buy Now'}
+            </Text>
           )}
         </TouchableOpacity>
       </View>

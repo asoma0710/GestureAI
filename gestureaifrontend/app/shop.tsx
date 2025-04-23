@@ -28,7 +28,7 @@ const Shop = () => {
 
         <TouchableOpacity
           onPress={() =>
-            goToDetails({ type: 'product', name: 'AR Glasses', price: 100, quantity: 1 })
+            goToDetails({ userId: '4',type: 'product', name: 'AR Glasses', price: 100, quantity: 1 })
           }
         >
           <View style={styles.container}>
@@ -69,6 +69,7 @@ const Shop = () => {
             key={sub.name}
             onPress={() =>
               goToDetails({
+                userId: '4',
                 type: 'subscription',
                 name: sub.name,
                 price: 100,

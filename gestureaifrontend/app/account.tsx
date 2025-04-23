@@ -99,6 +99,9 @@ const Account = ({ userId, onLogout }: AccountProps) => {
     navigation.navigate("EditProfile", { userId });
   };
 
+  
+
+
   // Navigate to Home (assumes "Home" route exists in your global navigator)
   const handleGoHome = () => {
     navigation.navigate("Home" as any);
