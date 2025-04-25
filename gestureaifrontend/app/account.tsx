@@ -171,14 +171,7 @@ const Account = ({ userId, onLogout }: AccountProps) => {
       {/* Settings Section */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>SETTINGS</Text>
-        <TouchableOpacity
-          style={styles.itemRow}
-          onPress={() =>
-            Alert.alert("Notifications", "Notification settings...")
-          }
-        >
-          <Text style={styles.itemText}>Notifications</Text>
-        </TouchableOpacity>
+        
         <TouchableOpacity
           style={styles.itemRow}
           onPress={handleGoShop}
@@ -187,19 +180,14 @@ const Account = ({ userId, onLogout }: AccountProps) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.itemRow}
-          onPress={() => Alert.alert("Learn", "Learning resources...")}
+          onPress={() => navigation.navigate("Learn" as any)}
         >
           <Text style={styles.itemText}>Learn</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.itemRow} onPress={handleContactUs}>
           <Text style={styles.itemText}>Help</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.itemRow}
-          onPress={() => Alert.alert("Train the model", "Model training details...")}
-        >
-          <Text style={styles.itemText}>Train the model</Text>
-        </TouchableOpacity>
+      
         {/* Sign Out option under Settings */}
         <TouchableOpacity style={styles.itemRow} onPress={onLogout}>
           <Text style={[styles.itemText, { color: "#E63946" }]}>Sign Out</Text>

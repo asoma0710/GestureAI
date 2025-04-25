@@ -12,13 +12,14 @@ import Home from "./home";
 import Shop from "./shop";
 import Account from "./account";
 import EditProfile from "./editprofile";
-import Details from "./Details";
+import Learn from "./learn";
+
 
 export type RootTabParamList = {
   Home: undefined;
   Shop: undefined;
   AccountStack: undefined;
-  TranscribeUrlAudio: undefined;
+  Learn: undefined;
   Merch: undefined;
 };
 
@@ -99,7 +100,17 @@ function AppNavigator({
         }}
       >
         {() => <AccountNavigator userId={userId} onLogout={onLogout} />}
-      </Tab.Screen>     
+      </Tab.Screen> 
+      <Tab.Screen
+        name="Learn"
+        component={Learn}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => {
+            const iconName = focused ? "book" : "book-outline";
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+        }}   
+      /> 
     </Tab.Navigator>
   );
 }
