@@ -22,13 +22,19 @@ GestureAI is being developed as part of a research initiative at Midwestern Stat
 
 ## [Software Requirements Specification Document](/docs/GestureAI_SRS.pdf)
 
-[![Document](https://github.com/asoma0710/GestureAI/blob/main/docs/srs.jpg)](https://github.com/asoma0710/GestureAI/blob/main/docs/SRS_Version_1.3_7petabytes%20(1).pdf)
+<a href="https://github.com/asoma0710/GestureAI/blob/main/docs/SRS_Version_1.3_7petabytes%20(1).pdf">
+  <img src="https://github.com/asoma0710/GestureAI/blob/main/docs/srs.jpg" alt="SRS Document" width="300"/>
+</a>
+
 
 ---
 
 ## [Feasibility Study](/docs/GestureAI_Feasibility_Study.pdf)
 
-[![Document](https://github.com/asoma0710/GestureAI/blob/main/docs/fs.jpg)](https://github.com/asoma0710/GestureAI/blob/main/docs/Feasibility%20Study.pdf)
+<a href="https://github.com/asoma0710/GestureAI/blob/main/docs/Feasibility%20Study.pdf">
+  <img src="https://github.com/asoma0710/GestureAI/blob/main/docs/fs.jpg" alt="Feasibility Study" width="300"/>
+</a>
+
 
 ---
 
