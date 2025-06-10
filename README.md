@@ -103,21 +103,74 @@ The dataset was preprocessed into training, validation, and testing splits using
 
 ---
 
-## 📁 Project Structure
+## 🧠 Model Training Overview
 
-```plaintext
+The gesture recognition model was trained using the [How2Sign dataset](https://how2sign.github.io/#download), which includes multi-view ASL videos paired with captioned segments. The training pipeline involves:
+
+- Extracting frames from videos and aligning them with textual annotations
+- Generating keypoints using MediaPipe for pose estimation
+- Feeding structured sequences into a CNN-based classifier
+- Exporting the trained model to TorchScript format using `train_live.py`
+- Testing inference with `test_cp.py`
+
+The final TorchScript `.pt` model is bundled in the mobile app for offline, real-time inference.
+
+---
+
+## 🌐 Backend API & Deployment
+
+The backend is built using **FastAPI** and consists of two key components:
+
+- `api.py` – the main server file that exposes RESTful endpoints for client interaction, speech-to-text, and model-related tasks
+- `testtospeech.py` – supports voice input handling
+
+### Deployment
+The backend is deployed on a **DigitalOcean Ubuntu droplet**, running the FastAPI server using `uvicorn`. Gunicorn/Nginx can also be configured for production.
+
+Example startup:
+
+uvicorn api:app --host 0.0.0.0 --port 8000
+
+
+### Database Schema & Hosting
+The PostgreSQL database is hosted on a DigitalOcean managed database cluster.
+Schema creation and table definitions are handled by:
+
+schema.sql – defines tables like AppUsers, Admins, Feedback, Merchandise, Purchases, GestureAIModel, etc.
+
+db.py – initializes the connection and interfaces with the PostgreSQL database using SQLAlchemy or psycopg2.
+
+Tables include:
+
+AppUsers – stores user credentials and profiles
+
+Feedback – captures user input for improvements
+
+Merchandise & Purchases – support the e-commerce module
+
+GestureAIModel – tracks deployed model versions and accuracy
+
+📁 Folder Structure
+```bash
 GestureAI/
-├── frontend/                  # React Native mobile app
-│   └── gestureapp/
-├── backend/                   # FastAPI backend server
-│   └── app/
-├── model/                     # Trained TorchScript models
-├── dataset/                  # Processed image/pose datasets
-├── docs/                      # Reports, videos, and assets
-├── scripts/                   # Preprocessing and model tools
-└── README.md
-
-
+├── gestureaifrontend/          # React Native mobile frontend
+│   ├── App.js
+│   └── screens/                # All UI pages and navigation
+│
+├── backend/                    # Backend API code (FastAPI)
+│   ├── api.py                  # RESTful API endpoints
+│   ├── testtospeech.py         # Speech-to-text processing
+│
+├── database/                   # Database logic and schema
+│   ├── schema.sql              # Table creation scripts
+│   └── db.py                   # PostgreSQL connection setup
+│
+├── model/                      # Model training and testing
+│   ├── train_live.py           # Training script
+│   └── test_cp.py              # Inference tester
+│
+├── docs/                       # SRS, feasibility study, images
+├── README.md
 
 
 
